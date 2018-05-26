@@ -1,0 +1,85 @@
+@startuml
+
+title 类图 
+
+interface Builder<T> {
+    T build();
+}
+
+interface Configuration {
+}
+
+abstract class AbstractConfiguration {
+  - ConcurrentMap<String, LoggerConfig> loggerConfigs;
+  - final WeakReference<LoggerContext> loggerContext;
+  - final WatchManager watchManager;
+  - final ConfigurationSource configurationSource;
+  .. 子组件 ..
+  - ConcurrentMap<String, Appender> appenders;
+  - final ConcurrentMap<String, String> properties
+  - final StrLookup tempLookup;
+  - final StrSubstitutor subst;
+}
+
+class BuiltConfiguration {
+    .. 配置中的各项组件 ..
+    # Component rootComponent;
+    - Component loggersComponent;
+    - Component appendersComponent;
+    - Component filtersComponent;
+    - Component propertiesComponent;
+    - Component customLevelsComponent;
+    - Component scriptsComponent;
+}
+
+class PropertiesConfiguration {
+}
+
+interface ConfigurationBuilder {
+  + ConfigurationBuilder<T> add(XxxComponentBuilder);
+  + Configuration build(boolean);
+}
+
+
+
+class DefaultConfigurationBuilder {
+    - Class<T> clazz;
+    - ConfigurationSource source;
+    - int monitorInterval;
+    - Level level;
+    - LoggerContext loggerContext;
+    - String name;
+    - Component root = new Component();
+    .. root 的子组件 ..
+    - Component loggers;
+    - Component appenders;
+    - Component filters;
+    - Component properties;
+    
+    __ 向父组件添加子组件通用方法 __
+    # ConfigurationBuilder<T> add(Component, ComponentBuilder<?>);
+}
+
+class PropertiesConfigurationBuilder {
+  - ConfigurationBuilder<PropertiesConfiguration> builder;
+  
+  - XxxComponentBuilder createXxx(Properties);
+  + PropertiesConfiguration build();
+}
+
+class PropertiesConfigurationFactory {
+  + PropertiesConfiguration getConfiguration(LoggerContext, ConfigurationSource);
+}
+
+Builder <|-left- ConfigurationBuilder: 继承
+Builder <|-down- PropertiesConfigurationBuilder: 实现
+ConfigurationBuilder <|-up- DefaultConfigurationBuilder: 实现
+ConfigurationBuilder "1" *-left- "1" Configuration: build()
+Configuration <|-left- AbstractConfiguration: 实现
+AbstractConfiguration <|-down- BuiltConfiguration: 继承
+BuiltConfiguration <|-down- PropertiesConfiguration: 继承
+PropertiesConfigurationBuilder  "1" *-left- "1"  ConfigurationBuilder: 包含
+PropertiesConfigurationBuilder  "1" *-left- "1"  PropertiesConfiguration: 创建
+PropertiesConfigurationFactory  "1" *-up- "1"  PropertiesConfigurationBuilder: 创建
+
+@enduml
