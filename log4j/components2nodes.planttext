@@ -1,0 +1,41 @@
+@startuml
+
+title Components to Nodes
+
+class PluginEntry {
+    - String key
+    - String className
+    - String name
+    - boolean printable
+    - boolean defer
+    - transient String category
+}
+
+class PluginType<T> {
+    - final PluginEntry pluginEntry
+    - final Class<T> pluginClass
+    - final String elementName
+}
+
+class Component {
+    - final Map<String, String> attributes
+    - final List<Component> components
+    - final String pluginType
+    - final String value
+}
+
+class Node {
+    - final Node parent
+    - final String name
+    - String value
+    - final PluginType<?> type
+    - final Map<String, String> attributes
+    - final List<Node> children
+    - Object object
+}
+
+PluginType "1" *-left- "1" PluginEntry: Composition
+Component "1" *-down- "1" PluginType: @Plugin(name = "pluginType")
+Node "1" *-up- "1" PluginType: Composition
+
+@enduml
