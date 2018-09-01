@@ -16,7 +16,6 @@ public interface IUserDao {
     /**
      * Query all users.
      *
-     * @author Reion
      * @return java.util.List<User>
      */
     List<User> getAllUsers();
@@ -24,7 +23,6 @@ public interface IUserDao {
     /**
      * Query one user by ID.
      *
-     * @author Reion
      * @param id User ID
      * @return User
      */
@@ -33,7 +31,6 @@ public interface IUserDao {
     /**
      * Query one user by name and password.
      *
-     * @author Reion
      * @param name User name
      * @param password User password
      * @return User
@@ -43,7 +40,6 @@ public interface IUserDao {
     /**
      * Add one user.
      *
-     * @author Reion
      * @param user User Object
      * @return int
      */
@@ -52,7 +48,6 @@ public interface IUserDao {
     /**
      * Delete one user by ID.
      *
-     * @author Reion
      * @param id User ID
      * @return int
      */
@@ -61,7 +56,6 @@ public interface IUserDao {
     /**
      * Update a user.
      *
-     * @author Reion
      * @param user User Object
      * @return int
      */

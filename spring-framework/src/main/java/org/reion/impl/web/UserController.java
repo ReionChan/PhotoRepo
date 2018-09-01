@@ -69,7 +69,6 @@ public class UserController {
      * A Link for register page.
      *
      * @return java.lang.String register path
-     * @author Reion
      */
     @GetMapping("/register")
     public String goRegister() {
@@ -108,7 +107,6 @@ public class UserController {
      * @param password User Password
      * @param model    MVC Model
      * @return java.lang.String After login path
-     * @author Reion
      */
     @PostMapping("/login")
     public ModelAndView doLogin(@RequestParam String userName, @RequestParam String password,

@@ -12,6 +12,7 @@
        profile="test">
 
     <context:component-scan base-package="org.reion" />
+    <context:annotation-config />
 
     <!-- 测试环境都是用内存数据库 -->
     <jdbc:embedded-database id="dataSource" type="DERBY">
@@ -25,10 +26,10 @@
 
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />
-        <property name="mapperLocations" value="classpath:org/reion/impl/dao/data/*.xml"/>
+        <property name="mapperLocations" value="classpath:org/reion/impl/dao/*.xml"/>
     </bean>
     <bean id="userMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
-        <property name="mapperInterface" value="org.reion.impl.dao.data.UserMapper" />
+        <property name="mapperInterface" value="org.reion.impl.dao.UserDaoMapper" />
         <property name="sqlSessionFactory" ref="sqlSessionFactory" />
     </bean>
     <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">

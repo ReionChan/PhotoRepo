@@ -1,8 +1,11 @@
 package org.reion.api;
 
 import org.junit.runner.RunWith;
+import org.reion.impl.aspect.DatabaseLogAspect;
+import org.reion.impl.config.DatabaseLogConfig;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
