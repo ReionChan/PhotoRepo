@@ -2,9 +2,14 @@ package org.reion.impl.aspect;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
+import org.reion.api.service.IAmqService;
+import org.reion.impl.domain.DataBaseLogMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
 
 /**
  * 数据库日志记录器切面
@@ -18,6 +23,9 @@ import org.springframework.stereotype.Component;
 public class DatabaseLogAspect {
 
     private static final Log log = LogFactory.getLog(DatabaseLogAspect.class);
+
+    @Autowired
+    IAmqService AmqService;
 
     @Pointcut("execution(* org.reion.impl.dao.*.*(..))")
     public void cut() {
@@ -37,8 +45,14 @@ public class DatabaseLogAspect {
 //    }
 
     @After("cut()")
-    public void afterLog() {
-        log.info("after 后置通知...");
+    public void afterLog(JoinPoint joinPoint) {
+        log.info("=========== after 后置通知 ===============");
+        DataBaseLogMessage dbLogMsg = new DataBaseLogMessage();
+        dbLogMsg.setSignature(joinPoint.getSignature().toShortString());
+        dbLogMsg.setArgs(joinPoint.getArgs());
+        dbLogMsg.setDatetime(System.currentTimeMillis());
+        AmqService.sendMsg(dbLogMsg.convert());
+        log.info("=========== after 后置通知 ===============\n");
     }
 
 //    @AfterReturning("cut()")

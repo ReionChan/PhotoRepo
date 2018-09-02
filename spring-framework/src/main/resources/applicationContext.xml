@@ -11,15 +11,19 @@
             http://www.springframework.org/schema/tx/spring-tx.xsd">
 
     <context:component-scan base-package="org.reion"/>
+    <!-- Enable Java annotation configuration -->
     <context:annotation-config />
     <context:property-placeholder location="classpath:jdbc.properties"/>
 
+    <!-- Datasource configuration -->
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="${jdbc.driverClassName}"/>
         <property name="url" value="${jdbc.url}"/>
         <property name="username" value="${jdbc.username}"/>
         <property name="password" value="${jdbc.password}"/>
     </bean>
+
+    <!-- Transaction configuration -->
     <bean id="txManager"
           class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
@@ -27,6 +31,7 @@
     <!-- proxy-target-class="true" open CGLib class proxy -->
     <tx:annotation-driven  transaction-manager="txManager" />
 
+    <!-- Mybatis -->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />
         <property name="mapperLocations" value="classpath:org/reion/impl/dao/*.xml"/>
@@ -39,4 +44,48 @@
     <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
         <constructor-arg index="0" ref="sqlSessionFactory" />
     </bean>
+
+    <!-- ActiveMQ 配置 -->
+    <bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory"
+          destroy-method="stop">
+        <property name="connectionFactory">
+            <bean class="org.apache.activemq.ActiveMQConnectionFactory">
+                <property name="brokerURL">
+                    <value>tcp://localhost:61616</value>
+                </property>
+            </bean>
+        </property>
+        <property name="maxConnections" value="100"></property>
+    </bean>
+    <!--使用缓存可以提升效率-->
+    <bean id="cachingConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
+        <property name="targetConnectionFactory" ref="jmsFactory"/>
+        <property name="sessionCacheSize" value="1"/>
+    </bean>
+    <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory" ref="cachingConnectionFactory"/>
+        <property name="messageConverter">
+            <bean class="org.springframework.jms.support.converter.SimpleMessageConverter"/>
+        </property>
+    </bean>
+    <!--测试Queue,队列的名字是spring-queue-->
+    <bean id="destinationQueue" class="org.apache.activemq.command.ActiveMQQueue">
+        <!--<constructor-arg index="0" value="spring-queue"/>-->
+        <constructor-arg name="name" value="spring-queue"/>
+    </bean>
+    <!--测试Topic-->
+    <!--<bean id="destinationTopic" class="org.apache.activemq.command.ActiveMQTopic">-->
+    <!--<constructor-arg index="0" value="spring-topic"/>-->
+    <!--</bean>-->
+    <!-- 消息接收 -->
+    <bean id="jmsContainer"
+          class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="connectionFactory" ref="cachingConnectionFactory"/>
+        <property name="destination" ref="destinationQueue"/>
+        <property name="messageListener" ref="messageListener"/>
+    </bean>
+
+    <!--消息监听器-->
+    <bean id="messageListener" class="org.reion.impl.service.AmqListener" />
+
 </beans>
