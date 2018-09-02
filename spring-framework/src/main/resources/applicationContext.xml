@@ -50,12 +50,10 @@
           destroy-method="stop">
         <property name="connectionFactory">
             <bean class="org.apache.activemq.ActiveMQConnectionFactory">
-                <property name="brokerURL">
-                    <value>tcp://localhost:61616</value>
-                </property>
+                <property name="brokerURL" value="tcp://localhost:61616"/>
             </bean>
         </property>
-        <property name="maxConnections" value="100"></property>
+        <property name="maxConnections" value="100"/>
     </bean>
     <!--使用缓存可以提升效率-->
     <bean id="cachingConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
@@ -70,7 +68,6 @@
     </bean>
     <!--测试Queue,队列的名字是spring-queue-->
     <bean id="destinationQueue" class="org.apache.activemq.command.ActiveMQQueue">
-        <!--<constructor-arg index="0" value="spring-queue"/>-->
         <constructor-arg name="name" value="spring-queue"/>
     </bean>
     <!--测试Topic-->
